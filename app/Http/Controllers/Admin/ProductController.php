@@ -217,57 +217,175 @@ class ProductController extends Controller
     /**
      * Update the specified product
      */
-    public function update(Request $request, Product $product)
-    {
-        // Similar validation as store method
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'short_description' => 'nullable|string',
-            'description' => 'required|string',
-            'base_price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0',
-            'sku' => 'required|string|unique:products,sku,' . $product->id,
-            'stock_quantity' => 'required|integer|min:0',
-            'brand' => 'nullable|string|max:255',
-            'model' => 'nullable|string|max:255',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-            'tags' => 'array',
-            'tags.*' => 'exists:tags,id',
+    /**
+ * Update the specified product
+ */
+public function update(Request $request, Product $product)
+{
+    // Validation
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'category_id' => 'required|exists:categories,id',
+        'short_description' => 'nullable|string',
+        'description' => 'required|string',
+        'base_price' => 'required|numeric|min:0',
+        'sale_price' => 'nullable|numeric|min:0',
+        'sku' => 'required|string|unique:products,sku,' . $product->id,
+        'stock_quantity' => 'required|integer|min:0',
+        'brand' => 'nullable|string|max:255',
+        'model' => 'nullable|string|max:255',
+        'is_featured' => 'boolean',
+        'is_active' => 'boolean',
+        'tags' => 'array',
+        'tags.*' => 'exists:tags,id',
+
+        // Variants
+        'variants' => 'array',
+        'variants.*.id' => 'nullable|exists:product_variants,id',
+        'variants.*.color_name' => 'required|string',
+        'variants.*.color_code' => 'nullable|string',
+        'variants.*.size' => 'nullable|string',
+        'variants.*.material' => 'nullable|string',
+        'variants.*.price' => 'required|numeric|min:0',
+        'variants.*.sale_price' => 'nullable|numeric|min:0',
+        'variants.*.stock_quantity' => 'required|integer|min:0',
+        'variants.*.sku' => 'required|string',
+        'variants.*.weight' => 'nullable|string',
+        'variants.*.variant_description' => 'nullable|string',
+
+        // SEO
+        'meta_title' => 'nullable|string|max:255',
+        'meta_description' => 'nullable|string',
+        'meta_keywords' => 'nullable|string',
+        'focus_keyword' => 'nullable|string',
+        'seo_content' => 'nullable|string',
+
+        // Images
+        'images' => 'array',
+        'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        'primary_image' => 'nullable|exists:product_images,id',
+        'removed_images' => 'nullable|string',
+    ]);
+
+    try {
+        \DB::beginTransaction();
+
+        // Update product
+        $product->update([
+            'name' => $validated['name'],
+            'slug' => Str::slug($validated['name']),
+            'category_id' => $validated['category_id'],
+            'short_description' => $validated['short_description'] ?? null,
+            'description' => $validated['description'],
+            'base_price' => $validated['base_price'],
+            'sale_price' => $validated['sale_price'] ?? null,
+            'sku' => $validated['sku'],
+            'stock_quantity' => $validated['stock_quantity'],
+            'in_stock' => $validated['stock_quantity'] > 0,
+            'brand' => $validated['brand'] ?? null,
+            'model' => $validated['model'] ?? null,
+            'is_featured' => $request->has('is_featured'),
+            'is_active' => $request->has('is_active'),
         ]);
 
-        try {
-            // Update product
-            $product->update([
-                'name' => $validated['name'],
-                'slug' => Str::slug($validated['name']),
-                'category_id' => $validated['category_id'],
-                'short_description' => $validated['short_description'],
-                'description' => $validated['description'],
-                'base_price' => $validated['base_price'],
-                'sale_price' => $validated['sale_price'],
-                'sku' => $validated['sku'],
-                'stock_quantity' => $validated['stock_quantity'],
-                'in_stock' => $validated['stock_quantity'] > 0,
-                'brand' => $validated['brand'],
-                'model' => $validated['model'],
-                'is_featured' => $request->has('is_featured'),
-                'is_active' => $request->has('is_active'),
-            ]);
+        // Sync tags
+        $product->tags()->sync($validated['tags'] ?? []);
 
-            // Sync tags
-            $product->tags()->sync($validated['tags'] ?? []);
-
-            return redirect()->route('admin.products.index')
-                ->with('success', 'Product updated successfully!');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error updating product: ' . $e->getMessage())
-                ->withInput();
+        // Update or create variants
+        if (isset($validated['variants'])) {
+            $existingVariantIds = [];
+            
+            foreach ($validated['variants'] as $variantData) {
+                if (isset($variantData['id'])) {
+                    // Update existing variant
+                    $variant = ProductVariant::find($variantData['id']);
+                    if ($variant) {
+                        $variant->update($variantData);
+                        $existingVariantIds[] = $variantData['id'];
+                    }
+                } else {
+                    // Create new variant
+                    $newVariant = ProductVariant::create(array_merge($variantData, ['product_id' => $product->id]));
+                    $existingVariantIds[] = $newVariant->id;
+                }
+            }
+            
+            // Delete variants that were removed
+            ProductVariant::where('product_id', $product->id)
+                ->whereNotIn('id', $existingVariantIds)
+                ->delete();
         }
+
+        // Update SEO data
+        if ($product->seo) {
+            $product->seo->update([
+                'meta_title' => $validated['meta_title'] ?? $product->name,
+                'meta_description' => $validated['meta_description'] ?? $product->short_description,
+                'meta_keywords' => $validated['meta_keywords'] ?? null,
+                'focus_keyword' => $validated['focus_keyword'] ?? null,
+                'seo_content' => $validated['seo_content'] ?? null,
+            ]);
+        } else {
+            ProductSeo::create([
+                'product_id' => $product->id,
+                'meta_title' => $validated['meta_title'] ?? $product->name,
+                'meta_description' => $validated['meta_description'] ?? $product->short_description,
+                'meta_keywords' => $validated['meta_keywords'] ?? null,
+                'focus_keyword' => $validated['focus_keyword'] ?? null,
+                'seo_content' => $validated['seo_content'] ?? null,
+            ]);
+        }
+
+        // Handle image removal
+        if ($request->filled('removed_images')) {
+            $removedImageIds = explode(',', $request->removed_images);
+            $imagesToRemove = ProductImage::whereIn('id', $removedImageIds)->get();
+            
+            foreach ($imagesToRemove as $image) {
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+            }
+        }
+
+        // Handle primary image update
+        if ($request->filled('primary_image')) {
+            ProductImage::where('product_id', $product->id)->update(['is_primary' => false]);
+            ProductImage::where('id', $request->primary_image)->update(['is_primary' => true]);
+        }
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $imagePath = $image->store('products', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image_path' => $imagePath,
+                    'alt_text' => $validated['name'],
+                    'is_primary' => $product->images()->count() === 0 && $index === 0,
+                    'sort_order' => $product->images()->max('sort_order') + $index + 1,
+                ]);
+            }
+        }
+
+        \DB::commit();
+
+        return redirect()->route('admin.products.index')
+            ->with('success', 'Product updated successfully!');
+
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        
+        \Log::error('Error updating product', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return redirect()->back()
+            ->with('error', 'Error updating product: ' . $e->getMessage())
+            ->withInput();
     }
+}
 
     /**
      * Remove the specified product
