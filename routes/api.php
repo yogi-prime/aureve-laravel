@@ -27,7 +27,10 @@ Route::post('/wishlist/add', [WishlistController::class, 'add']);
 Route::post('/wishlist/remove', [WishlistController::class, 'remove']);
 Route::get('/wishlist/check/{productId}', [WishlistController::class, 'check']);
 
-
+// CATEGORY API (Dynamic by slug)
+Route::get('/categories/slug/{slug}', [CategoryController::class, 'showBySlug']);
+Route::get('/categories/slug/{slug}/products', [CategoryController::class, 'productsBySlug']);
+Route::get('/categories/with-counts', [CategoryController::class, 'indexWithCounts']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
 Route::post('/register', [AuthController::class, 'register']);
