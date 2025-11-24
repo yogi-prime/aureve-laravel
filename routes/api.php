@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,19 +23,17 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/slug/{slug}', [ProductController::class, 'showBySlug']);
 Route::get('/products/{productId}/similar', [ProductController::class, 'similarProducts']);
 
-// Wishlist routes
-Route::post('/wishlist/add', [WishlistController::class, 'add']);
-Route::post('/wishlist/remove', [WishlistController::class, 'remove']);
-Route::get('/wishlist/check/{productId}', [WishlistController::class, 'check']);
-
-// CATEGORY API (Dynamic by slug)
+// Category APIs
 Route::get('/categories/slug/{slug}', [CategoryController::class, 'showBySlug']);
 Route::get('/categories/slug/{slug}/products', [CategoryController::class, 'productsBySlug']);
 Route::get('/categories/with-counts', [CategoryController::class, 'indexWithCounts']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
+
+// Auth APIs
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 // Protected APIs (Authentication Required)
 Route::middleware('auth:sanctum')->group(function () {
     // User APIs
@@ -48,6 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/remove/{cart}', [CartController::class, 'remove']);
     Route::post('/cart/clear', [CartController::class, 'clear']);
 
+    // Wishlist APIs - FIXED CONFLICTS
+    Route::get('/wishlist', [WishlistController::class, 'index']); // ✅ ADD THIS
+    Route::post('/wishlist/add', [WishlistController::class, 'add']);
+    Route::post('/wishlist/remove', [WishlistController::class, 'remove']); // ✅ POST method for remove
+    Route::get('/wishlist/check/{productId}', [WishlistController::class, 'check']);
+    // Route::delete('/wishlist/remove/{wishlist}', [WishlistController::class, 'remove']); // ❌ REMOVE THIS DUPLICATE
 
     // Checkout Routes
     Route::prefix('checkout')->group(function () {
@@ -68,11 +73,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{order}/track', [OrderController::class, 'track']);
         Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
     });
-    
-    // Wishlist APIs
-    Route::get('/wishlist', [WishlistController::class, 'index']);
-    Route::post('/wishlist/add', [WishlistController::class, 'add']);
-    Route::delete('/wishlist/remove/{wishlist}', [WishlistController::class, 'remove']);
 });
 
 // CORS handle karne ke liye
