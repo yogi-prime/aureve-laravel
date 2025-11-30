@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\ShiprocketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -102,13 +103,27 @@ class OrderController extends Controller
             }
 
             $order->load(['items.product.primaryImage']);
-            $timeline = $this->getOrderTimeline($order);
+
+            // Use Shiprocket tracking if available
+            $shiprocket = new ShiprocketService();
+            $trackingData = $shiprocket->getTrackingTimeline($order);
 
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'order' => $order,
-                    'timeline' => $timeline
+                    'order' => [
+                        'id' => $order->id,
+                        'order_number' => $order->order_number,
+                        'status' => $order->status,
+                        'total_amount' => $order->total_amount,
+                        'created_at' => $order->created_at,
+                        'items' => $order->items,
+                        'tracking_number' => $order->tracking_number,
+                        'awb_code' => $order->awb_code,
+                        'courier_name' => $order->courier_name,
+                    ],
+                    'timeline' => $trackingData['timeline'],
+                    'tracking_info' => $trackingData['tracking_info'] ?? null,
                 ]
             ]);
 

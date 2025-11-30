@@ -45,4 +45,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('blogs.toggle-status');
     Route::post('/blogs/{blog}/toggle-featured', [\App\Http\Controllers\Admin\BlogController::class, 'toggleFeatured'])
         ->name('blogs.toggle-featured');
+
+    // Shiprocket / Shipping Management
+    Route::prefix('orders/{order}/shiprocket')->name('shiprocket.')->group(function () {
+        Route::post('/create', [\App\Http\Controllers\Admin\ShiprocketController::class, 'createOrder'])->name('create');
+        Route::get('/couriers', [\App\Http\Controllers\Admin\ShiprocketController::class, 'getAvailableCouriers'])->name('couriers');
+        Route::post('/awb', [\App\Http\Controllers\Admin\ShiprocketController::class, 'assignAWB'])->name('awb');
+        Route::post('/pickup', [\App\Http\Controllers\Admin\ShiprocketController::class, 'schedulePickup'])->name('pickup');
+        Route::post('/ship', [\App\Http\Controllers\Admin\ShiprocketController::class, 'shipOrder'])->name('ship');
+        Route::get('/track', [\App\Http\Controllers\Admin\ShiprocketController::class, 'track'])->name('track');
+        Route::post('/cancel', [\App\Http\Controllers\Admin\ShiprocketController::class, 'cancelShipment'])->name('cancel');
+        Route::get('/label', [\App\Http\Controllers\Admin\ShiprocketController::class, 'generateLabel'])->name('label');
+        Route::get('/invoice', [\App\Http\Controllers\Admin\ShiprocketController::class, 'generateInvoice'])->name('invoice');
+    });
 });

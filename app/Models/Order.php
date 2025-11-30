@@ -16,7 +16,11 @@ class Order extends Model
         'order_number', 'user_id', 'subtotal', 'tax_amount', 'shipping_charge',
         'discount_amount', 'total_amount', 'status', 'payment_status',
         'shipping_address', 'billing_address', 'customer_note', 'tracking_number',
-        'shipped_at', 'delivered_at', 'cancelled_at'
+        'shipped_at', 'delivered_at', 'cancelled_at',
+        // Shiprocket fields
+        'shiprocket_order_id', 'shiprocket_shipment_id', 'awb_code',
+        'courier_name', 'courier_id', 'pickup_scheduled_at', 'shipping_weight',
+        'shiprocket_response'
     ];
 
     protected $casts = [
@@ -28,6 +32,10 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'pickup_scheduled_at' => 'datetime',
+        'shiprocket_response' => 'array',
+        'shipping_address' => 'array',
+        'billing_address' => 'array',
     ];
 
     // User relationship
@@ -64,5 +72,23 @@ class Order extends Model
     public function getCanBeCancelledAttribute()
     {
         return in_array($this->status, ['pending', 'confirmed']);
+    }
+
+    // Check if order can be cancelled (method version for controller)
+    public function canBeCancelled(): bool
+    {
+        return in_array($this->status, ['pending', 'confirmed']);
+    }
+
+    // Check if order is shipped via Shiprocket
+    public function isShippedViaShiprocket(): bool
+    {
+        return !empty($this->shiprocket_order_id);
+    }
+
+    // Check if AWB is assigned
+    public function hasAwb(): bool
+    {
+        return !empty($this->awb_code);
     }
 }
