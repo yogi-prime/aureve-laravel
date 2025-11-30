@@ -66,7 +66,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex space-x-2">
-                                <a href="{{ route('products.category', $category->slug) }}" 
+                                <a href="{{ route('admin.categories.edit', $category->slug) }}" 
                                    target="_blank" class="text-blue-600 hover:text-blue-900" title="View">
                                     <i class="fas fa-eye"></i>
                                 </a>
@@ -128,7 +128,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('products.category', $child->slug) }}" 
+                                    <a href="{{ route('admin.categories.edit', $child->slug) }}" 
                                        target="_blank" class="text-blue-600 hover:text-blue-900" title="View">
                                         <i class="fas fa-eye"></i>
                                     </a>

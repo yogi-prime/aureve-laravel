@@ -4,7 +4,7 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
     <!-- Stats Cards -->
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div class="flex items-center">
@@ -41,70 +41,105 @@
             </div>
         </div>
     </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-lg">
+                <i class="fas fa-blog text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-sm font-medium text-gray-500">Total Blogs</h3>
+                <p class="text-2xl font-bold text-gray-900">{{ $totalBlogs ?? 0 }}</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Recent Products -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Recent Products</h3>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Products -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900">Recent Products</h3>
+            <a href="{{ route('admin.products.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+        </div>
+        <div class="p-6">
+            @if($recentProducts->count() > 0)
+                <div class="space-y-4">
+                    @foreach($recentProducts as $product)
+                        <div class="flex items-center">
+                            @if($product->primaryImage)
+                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                                     alt="{{ $product->name }}"
+                                     class="w-12 h-12 rounded object-cover mr-4">
+                            @else
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mr-4">
+                                    <i class="fas fa-image text-gray-400"></i>
+                                </div>
+                            @endif
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">{{ Str::limit($product->name, 30) }}</div>
+                                <div class="text-sm text-gray-500">{{ $product->category->name ?? 'Uncategorized' }}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-medium text-gray-900">{{ number_format($product->base_price) }}</div>
+                                <span class="text-xs px-2 py-1 rounded {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-box text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500">No products yet</p>
+                    <a href="{{ route('admin.products.create') }}" class="text-indigo-600 hover:text-indigo-800">Add Product</a>
+                </div>
+            @endif
+        </div>
     </div>
-    <div class="p-6">
-        @if($recentProducts->count() > 0)
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @foreach($recentProducts as $product)
-                            <tr>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center">
-                                        @if($product->primaryImage)
-                                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" 
-                                                 alt="{{ $product->name }}"
-                                                 class="w-10 h-10 rounded object-cover mr-3">
-                                        @else
-                                            <div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center mr-3">
-                                                <i class="fas fa-image text-gray-400"></i>
-                                            </div>
-                                        @endif
-                                        <div>
-                                            <div class="font-medium text-gray-900">{{ $product->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $product->sku }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-900">{{ $product->category->name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">₹{{ $product->final_price }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">{{ $product->stock_quantity }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        {{ $product->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <div class="text-center py-8">
-                <i class="fas fa-box text-4xl text-gray-400 mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No products yet</h3>
-                <p class="text-gray-500 mb-4">Get started by adding your first product</p>
-                <a href="{{ route('admin.products.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                    Add Product
-                </a>
-            </div>
-        @endif
+
+    <!-- Recent Blogs -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900">Recent Blogs</h3>
+            <a href="{{ route('admin.blogs.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm">View All</a>
+        </div>
+        <div class="p-6">
+            @if(isset($recentBlogs) && $recentBlogs->count() > 0)
+                <div class="space-y-4">
+                    @foreach($recentBlogs as $blog)
+                        <div class="flex items-center">
+                            @if($blog->featured_image)
+                                <img src="{{ asset('storage/' . $blog->featured_image) }}"
+                                     alt="{{ $blog->title }}"
+                                     class="w-12 h-12 rounded object-cover mr-4">
+                            @else
+                                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center mr-4">
+                                    <i class="fas fa-blog text-gray-400"></i>
+                                </div>
+                            @endif
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">{{ Str::limit($blog->title, 30) }}</div>
+                                <div class="text-sm text-gray-500">{{ $blog->reading_time }} min read</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500">{{ $blog->view_count }} views</div>
+                                <span class="text-xs px-2 py-1 rounded {{ $blog->is_published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                    {{ $blog->is_published ? 'Published' : 'Draft' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <i class="fas fa-blog text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500">No blogs yet</p>
+                    <a href="{{ route('admin.blogs.create') }}" class="text-indigo-600 hover:text-indigo-800">Add Blog</a>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection

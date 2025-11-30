@@ -10,12 +10,25 @@ use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\BlogController;
 
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 */
+
+// Blog APIs (Public) - Insights
+Route::prefix('blogs')->group(function () {
+    Route::get('/', [BlogController::class, 'index']);
+    Route::get('/featured', [BlogController::class, 'featured']);
+    Route::get('/categories', [BlogController::class, 'categories']);
+    Route::get('/tags', [BlogController::class, 'tags']);
+    Route::get('/archive', [BlogController::class, 'archive']);
+    Route::get('/sitemap', [BlogController::class, 'sitemap']);
+    Route::get('/{slug}', [BlogController::class, 'show']);
+    Route::get('/{slug}/related', [BlogController::class, 'related']);
+});
 
 // Public APIs
 Route::get('/products', [ProductController::class, 'index']);
@@ -47,12 +60,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/remove/{cart}', [CartController::class, 'remove']);
     Route::post('/cart/clear', [CartController::class, 'clear']);
 
-    // Wishlist APIs - FIXED CONFLICTS
-    Route::get('/wishlist', [WishlistController::class, 'index']); // ✅ ADD THIS
+    // Wishlist APIs
+    Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/add', [WishlistController::class, 'add']);
-    Route::post('/wishlist/remove', [WishlistController::class, 'remove']); // ✅ POST method for remove
+    Route::post('/wishlist/remove', [WishlistController::class, 'remove']);
     Route::get('/wishlist/check/{productId}', [WishlistController::class, 'check']);
-    // Route::delete('/wishlist/remove/{wishlist}', [WishlistController::class, 'remove']); // ❌ REMOVE THIS DUPLICATE
 
     // Checkout Routes
     Route::prefix('checkout')->group(function () {

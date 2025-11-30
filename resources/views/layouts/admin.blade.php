@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard')</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     @yield('styles')
 </head>
 <body class="bg-gray-100">
@@ -25,32 +25,35 @@
                     </a>
 
                     <!-- Navigation -->
-                    <!-- Navigation -->
-<nav class="hidden md:flex space-x-6">
-    <a href="{{ route('admin.dashboard') }}" 
-       class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.dashboard') ? 'text-indigo-600' : '' }}">
-        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-    </a>
-    <a href="{{ route('admin.products.index') }}" 
-       class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.products.*') ? 'text-indigo-600' : '' }}">
-        <i class="fas fa-box mr-2"></i>Products
-    </a>
-    <a href="{{ route('admin.categories.index') }}" 
-       class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.categories.*') ? 'text-indigo-600' : '' }}">
-        <i class="fas fa-tags mr-2"></i>Categories
-    </a>
-    <a href="{{ route('admin.tags.index') }}" 
-       class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.tags.*') ? 'text-indigo-600' : '' }}">
-        <i class="fas fa-hashtag mr-2"></i>Tags
-    </a>
-</nav>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="{{ route('admin.dashboard') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.dashboard') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                        </a>
+                        <a href="{{ route('admin.products.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.products.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-box mr-2"></i>Products
+                        </a>
+                        <a href="{{ route('admin.categories.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.categories.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-tags mr-2"></i>Categories
+                        </a>
+                        <a href="{{ route('admin.tags.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.tags.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-hashtag mr-2"></i>Tags
+                        </a>
+                        <a href="{{ route('admin.blogs.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.blogs.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-blog mr-2"></i>Blogs
+                        </a>
+                    </nav>
                 </div>
 
-                <!-- Back to Store -->
+                <!-- Settings -->
                 <div>
-                    <a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600">
-                        <i class="fas fa-store mr-2"></i>Back to Store
-                    </a>
+                    <span class="text-gray-600">
+                        <i class="fas fa-user-circle mr-2"></i>Admin
+                    </span>
                 </div>
             </div>
         </div>
