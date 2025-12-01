@@ -46,6 +46,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/blogs/{blog}/toggle-featured', [\App\Http\Controllers\Admin\BlogController::class, 'toggleFeatured'])
         ->name('blogs.toggle-featured');
 
+    // Blog Categories Management
+    Route::resource('blog-categories', \App\Http\Controllers\Admin\BlogCategoryController::class);
+    Route::post('/blog-categories/{blogCategory}/toggle-status', [\App\Http\Controllers\Admin\BlogCategoryController::class, 'toggleStatus'])
+        ->name('blog-categories.toggle-status');
+
+    // Blog Tags Management
+    Route::resource('blog-tags', \App\Http\Controllers\Admin\BlogTagController::class);
+    Route::post('/blog-tags/{blogTag}/toggle-status', [\App\Http\Controllers\Admin\BlogTagController::class, 'toggleStatus'])
+        ->name('blog-tags.toggle-status');
+
     // Shiprocket / Shipping Management
     Route::prefix('orders/{order}/shiprocket')->name('shiprocket.')->group(function () {
         Route::post('/create', [\App\Http\Controllers\Admin\ShiprocketController::class, 'createOrder'])->name('create');

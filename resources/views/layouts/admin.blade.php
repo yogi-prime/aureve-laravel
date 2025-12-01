@@ -46,6 +46,14 @@
                            class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.blogs.*') ? 'text-indigo-600' : '' }}">
                             <i class="fas fa-blog mr-2"></i>Blogs
                         </a>
+                        <a href="{{ route('admin.blog-categories.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.blog-categories.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-folder mr-2"></i>Blog Categories
+                        </a>
+                        <a href="{{ route('admin.blog-tags.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.blog-tags.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-hashtag mr-2"></i>Blog Tags
+                        </a>
                     </nav>
                 </div>
 

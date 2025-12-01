@@ -92,7 +92,7 @@
                                    class="text-green-600 hover:text-green-900" title="SEO Analysis">
                                     <i class="fas fa-chart-line"></i>
                                 </a>
-                                <a href="{{ route('products.show', $product->slug) }}" 
+                                <a href="{{ route('admin.products.show', $product) }}"
                                    target="_blank" class="text-blue-600 hover:text-blue-900" title="View">
                                     <i class="fas fa-eye"></i>
                                 </a>
