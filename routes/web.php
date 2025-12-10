@@ -56,6 +56,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/blog-tags/{blogTag}/toggle-status', [\App\Http\Controllers\Admin\BlogTagController::class, 'toggleStatus'])
         ->name('blog-tags.toggle-status');
 
+    // Orders Management
+    Route::get("/orders", [\App\Http\Controllers\Admin\OrderController::class, "index"])->name("orders.index");
+    Route::get("/orders/{order}", [\App\Http\Controllers\Admin\OrderController::class, "show"])->name("orders.show");
+    Route::patch("/orders/{order}/status", [\App\Http\Controllers\Admin\OrderController::class, "updateStatus"])->name("orders.update-status");
+    Route::patch("/orders/{order}/payment-status", [\App\Http\Controllers\Admin\OrderController::class, "updatePaymentStatus"])->name("orders.update-payment-status");
+
     // Shiprocket / Shipping Management
     Route::prefix('orders/{order}/shiprocket')->name('shiprocket.')->group(function () {
         Route::post('/create', [\App\Http\Controllers\Admin\ShiprocketController::class, 'createOrder'])->name('create');

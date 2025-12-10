@@ -8,6 +8,8 @@ return [
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'http://192.168.1.3:3000',
+        'http://192.168.1.11:3000',
+        'http://192.168.1.2:3000',
         'http://192.168.1.5:3000',
         'https://www.aurevejewels.com',
         'https://app.aurevejewels.com',

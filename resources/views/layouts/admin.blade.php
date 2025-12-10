@@ -30,6 +30,10 @@
                            class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.dashboard') ? 'text-indigo-600' : '' }}">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
+                        <a href="{{ route('admin.orders.index') }}"
+                           class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.orders.*') ? 'text-indigo-600' : '' }}">
+                            <i class="fas fa-shopping-cart mr-2"></i>Orders
+                        </a>
                         <a href="{{ route('admin.products.index') }}"
                            class="text-gray-700 hover:text-indigo-600 font-medium {{ request()->routeIs('admin.products.*') ? 'text-indigo-600' : '' }}">
                             <i class="fas fa-box mr-2"></i>Products
