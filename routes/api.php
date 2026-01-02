@@ -46,6 +46,7 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 // Auth APIs
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
 // Protected APIs (Authentication Required)
 Route::middleware('auth:sanctum')->group(function () {

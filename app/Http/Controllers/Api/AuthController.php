@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -144,6 +145,83 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch user data'
+            ], 500);
+        }
+    }
+
+    public function googleLogin(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'access_token' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Get user info from Google using access token
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->access_token);
+
+            if (!$googleUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid Google token'
+                ], 401);
+            }
+
+            // Check if user exists with this google_id
+            $user = User::where('google_id', $googleUser->getId())->first();
+
+            if (!$user) {
+                // Check if user exists with same email
+                $user = User::where('email', $googleUser->getEmail())->first();
+
+                if ($user) {
+                    // Link Google account to existing user
+                    $user->update([
+                        'google_id' => $googleUser->getId(),
+                        'avatar' => $user->avatar ?? $googleUser->getAvatar(),
+                    ]);
+                } else {
+                    // Create new user
+                    $user = User::create([
+                        'name' => $googleUser->getName(),
+                        'email' => $googleUser->getEmail(),
+                        'google_id' => $googleUser->getId(),
+                        'avatar' => $googleUser->getAvatar(),
+                        'password' => null,
+                    ]);
+                }
+            }
+
+            // Create token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Google login successful',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Google login error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Google login failed',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
