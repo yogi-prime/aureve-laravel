@@ -13,13 +13,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         $totalProducts = \App\Models\Product::count();
         $totalCategories = \App\Models\Category::count();
+        $totalCollections = \App\Models\Collection::count();
         $totalTags = \App\Models\Tag::count();
         $totalOrders = \App\Models\Order::count();
         $totalBlogs = \App\Models\Blog::count();
         $recentProducts = \App\Models\Product::latest()->limit(5)->get();
         $recentBlogs = \App\Models\Blog::latest()->limit(5)->get();
 
-        return view('admin.dashboard', compact('totalProducts', 'totalCategories', 'totalTags', 'totalOrders', 'totalBlogs', 'recentProducts', 'recentBlogs'));
+        return view('admin.dashboard', compact('totalProducts', 'totalCategories', 'totalCollections', 'totalTags', 'totalOrders', 'totalBlogs', 'recentProducts', 'recentBlogs'));
     })->name('dashboard');
 
     // Product Management
@@ -33,6 +34,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::post('/categories/{category}/toggle-status', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleStatus'])
         ->name('categories.toggle-status');
+
+    // Collections Management
+    Route::resource('collections', \App\Http\Controllers\Admin\CollectionController::class);
+    Route::post('/collections/{collection}/toggle-status', [\App\Http\Controllers\Admin\CollectionController::class, 'toggleStatus'])
+        ->name('collections.toggle-status');
+    Route::get('/collections/{collection}/manage-products', [\App\Http\Controllers\Admin\CollectionController::class, 'manageProducts'])
+        ->name('collections.manage-products');
+    Route::post('/collections/{collection}/update-products', [\App\Http\Controllers\Admin\CollectionController::class, 'updateProducts'])
+        ->name('collections.update-products');
 
     // Tags Management
     Route::resource('tags', \App\Http\Controllers\Admin\TagController::class);

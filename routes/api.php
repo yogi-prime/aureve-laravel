@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CollectionController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CheckoutController;
@@ -43,6 +44,13 @@ Route::get('/categories/slug/{slug}/products', [CategoryController::class, 'prod
 Route::get('/categories/with-counts', [CategoryController::class, 'indexWithCounts']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{id}', [CategoryController::class, 'show']);
+
+// Collection APIs
+Route::get('/collections/slug/{slug}', [CollectionController::class, 'showBySlug']);
+Route::get('/collections/slug/{slug}/products', [CollectionController::class, 'productsBySlug']);
+Route::get('/collections/with-counts', [CollectionController::class, 'indexWithCounts']);
+Route::get('/collections', [CollectionController::class, 'index']);
+Route::get('/collections/{id}', [CollectionController::class, 'show']);
 
 // Auth APIs
 Route::post('/register', [AuthController::class, 'register']);

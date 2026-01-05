@@ -76,6 +76,13 @@ class Product extends Model
         return $this->belongsToMany(Tag::class, 'product_tag');
     }
 
+    // Collections relationship (many-to-many)
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(Collection::class, 'collection_product')
+                    ->withTimestamps();
+    }
+
     // Carts relationship
     public function carts(): HasMany
     {

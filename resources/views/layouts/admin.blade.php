@@ -83,6 +83,11 @@
                         <i class="fas fa-tags w-5 mr-3"></i>
                         <span>Categories</span>
                     </a>
+                    <a href="{{ route('admin.collections.index') }}"
+                       class="sidebar-link {{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+                        <i class="fas fa-layer-group w-5 mr-3"></i>
+                        <span>Collections</span>
+                    </a>
                     <a href="{{ route('admin.tags.index') }}"
                        class="sidebar-link {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}">
                         <i class="fas fa-hashtag w-5 mr-3"></i>
