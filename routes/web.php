@@ -56,6 +56,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/blog-tags/{blogTag}/toggle-status', [\App\Http\Controllers\Admin\BlogTagController::class, 'toggleStatus'])
         ->name('blog-tags.toggle-status');
 
+    // Size Guides Management
+    Route::resource('size-guides', \App\Http\Controllers\Admin\SizeGuideController::class);
+    Route::post('/size-guides/{sizeGuide}/toggle-status', [\App\Http\Controllers\Admin\SizeGuideController::class, 'toggleStatus'])
+        ->name('size-guides.toggle-status');
+
     // Orders Management
     Route::get("/orders", [\App\Http\Controllers\Admin\OrderController::class, "index"])->name("orders.index");
     Route::get("/orders/{order}", [\App\Http\Controllers\Admin\OrderController::class, "show"])->name("orders.show");

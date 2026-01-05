@@ -16,7 +16,7 @@ class Product extends Model
     protected $fillable = [
         'name', 'slug', 'short_description', 'description', 'base_price', 'sale_price',
         'sku', 'stock_quantity', 'in_stock', 'is_featured', 'is_active', 'brand', 'model',
-        'specifications', 'category_id', 'view_count', 'sort_order'
+        'specifications', 'category_id', 'size_guide_id', 'view_count', 'sort_order'
     ];
 
     protected $casts = [
@@ -32,6 +32,12 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Size Guide relationship
+    public function sizeGuide(): BelongsTo
+    {
+        return $this->belongsTo(SizeGuide::class);
     }
 
     // Variants relationship

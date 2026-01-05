@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\SizeGuideController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{order}/track', [OrderController::class, 'track']);
         Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
     });
+});
+
+// Size Guide APIs (Public)
+Route::prefix('size-guides')->group(function () {
+    Route::get('/', [SizeGuideController::class, 'index']);
+    Route::get('/dropdown', [SizeGuideController::class, 'dropdown']);
+    Route::get('/{id}', [SizeGuideController::class, 'show']);
+    Route::post('/', [SizeGuideController::class, 'store']);
+    Route::post('/{id}', [SizeGuideController::class, 'update']); // POST for form-data with file
+    Route::delete('/{id}', [SizeGuideController::class, 'destroy']);
 });
 
 // CORS handle karne ke liye

@@ -109,7 +109,8 @@ class ProductController extends Controller
                     $query->orderBy('is_primary', 'desc')
                           ->orderBy('sort_order', 'asc');
                 },
-                'seo'
+                'seo',
+                'sizeGuide'
             ])->where('is_active', true)->findOrFail($id);
 
             // Increment view count
@@ -147,7 +148,8 @@ class ProductController extends Controller
                     $query->orderBy('is_primary', 'desc')
                           ->orderBy('sort_order', 'asc');
                 },
-                'seo'
+                'seo',
+                'sizeGuide'
             ])->where('slug', $slug)
               ->where('is_active', true)
               ->firstOrFail();

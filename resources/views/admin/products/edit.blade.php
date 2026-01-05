@@ -92,6 +92,23 @@
                         @enderror
                     </div>
 
+                    <!-- Size Guide -->
+                    <div>
+                        <label for="size_guide_id" class="block text-sm font-medium text-gray-700">Size Guide</label>
+                        <select name="size_guide_id" id="size_guide_id"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">No Size Guide</option>
+                            @foreach($sizeGuides as $sizeGuide)
+                                <option value="{{ $sizeGuide->id }}" {{ old('size_guide_id', $product->size_guide_id) == $sizeGuide->id ? 'selected' : '' }}>
+                                    {{ $sizeGuide->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <a href="{{ route('admin.size-guides.create') }}" class="text-indigo-600 hover:underline">Create new size guide</a>
+                        </p>
+                    </div>
+
                     <!-- Brand -->
                     <div>
                         <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>

@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Models\ProductVariant;
 use App\Models\ProductImage;
 use App\Models\ProductSeo;
+use App\Models\SizeGuide;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -34,8 +35,9 @@ class ProductController extends Controller
     {
         $categories = Category::where('is_active', true)->get();
         $tags = Tag::where('is_active', true)->get();
+        $sizeGuides = SizeGuide::where('is_active', true)->orderBy('title')->get();
         
-        return view('admin.products.create', compact('categories', 'tags'));
+        return view('admin.products.create', compact('categories', 'tags', 'sizeGuides'));
     }
 
     /**
@@ -57,6 +59,7 @@ class ProductController extends Controller
         'stock_quantity' => 'required|integer|min:0',
         'brand' => 'nullable|string|max:255',
         'model' => 'nullable|string|max:255',
+        'size_guide_id' => 'nullable|exists:size_guides,id',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'tags' => 'array',
@@ -95,6 +98,7 @@ class ProductController extends Controller
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'category_id' => $validated['category_id'],
+            'size_guide_id' => $validated['size_guide_id'] ?? null,
             'short_description' => $validated['short_description'] ?? null,
             'description' => $validated['description'],
             'base_price' => $validated['base_price'],
@@ -207,11 +211,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load(['variants', 'images', 'tags', 'seo']);
+        $product->load(['variants', 'images', 'tags', 'seo', 'sizeGuide']);
         $categories = Category::where('is_active', true)->get();
         $tags = Tag::where('is_active', true)->get();
+        $sizeGuides = SizeGuide::where('is_active', true)->orderBy('title')->get();
         
-        return view('admin.products.edit', compact('product', 'categories', 'tags'));
+        return view('admin.products.edit', compact('product', 'categories', 'tags', 'sizeGuides'));
     }
 
     /**
@@ -234,6 +239,7 @@ public function update(Request $request, Product $product)
         'stock_quantity' => 'required|integer|min:0',
         'brand' => 'nullable|string|max:255',
         'model' => 'nullable|string|max:255',
+        'size_guide_id' => 'nullable|exists:size_guides,id',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'tags' => 'array',
@@ -275,6 +281,7 @@ public function update(Request $request, Product $product)
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']),
             'category_id' => $validated['category_id'],
+            'size_guide_id' => $validated['size_guide_id'] ?? null,
             'short_description' => $validated['short_description'] ?? null,
             'description' => $validated['description'],
             'base_price' => $validated['base_price'],
